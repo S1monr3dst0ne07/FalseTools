@@ -5,9 +5,6 @@ def Error(msg):
     print(msg)
     sys.exit(0)
 
-import msvcrt
-getch = msvcrt.getch
-
 class cCommandEnum(enum.Enum):
     PUTINT  = enum.auto()
     PUTCHR  = enum.auto()
@@ -67,8 +64,8 @@ CM = {
     "ß" : CE.FLUSH,
     }
 
-class cFalse:
 
+class cFalseCompiler:
     @dataclass
     class cCommand:
         xType : int
