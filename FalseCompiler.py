@@ -83,7 +83,7 @@ class cFalseCompiler:
             (self.xOp, self.xArg) = tuple(map(str, xInp)) + ((None,) if len(xInp) < 2 else ())
         
         def __str__(self):
-            return f"{self.xOp} {self.xArg}".format()
+            return f"{self.xOp} {'' if self.xArg is None else self.xArg}".format()
         
     class cLambda:
         def __init__(self, xContent : list):
@@ -268,8 +268,8 @@ class cFalseCompiler:
                             cS1Inst("putstr"),
                         ],
                     CE.EXEC : [
-                            #push current ir as return address (+1 to reference the next command)
-                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 1) * 2),
+                            #push current ir as return address (+7 to reference the next command)
+                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 7) * 2),
                             cS1Inst("sRP", xCallStackIndex),
 
                             #inc stack ptr
@@ -287,7 +287,7 @@ class cFalseCompiler:
                 
             
         if xDoLambda:   return self.AllocLambda(xInstBuffer)
-        else:           return self.xInstList + [cS1Inst("lab", "main")] + xInstBuffer
+        else:           return self.xInstList + [cS1Inst("lab", "main")] + xInstBuffer + [cS1Inst("brk")]
             
                
     @staticmethod
@@ -297,10 +297,8 @@ class cFalseCompiler:
 
 if __name__ == '__main__':
     with open(sys.argv[1], "r") as xFile:
-        xOut = cFalseCompiler.Main(xFile.read())
-    
-    print("\n".join(map(str, xOut)))
-        
-    #with open("build.s1", "r") as xFile:
-    #    xFile.write(xOut)
+        xOutInsts = cFalseCompiler.Main(xFile.read())
+            
+    with open("build.s1", "w") as xFile:
+        xFile.write("\n".join(map(str, xOutInsts)))
         
