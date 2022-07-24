@@ -64,6 +64,13 @@ CM = {
     "ß" : CE.FLUSH,
     }
 
+xIntLimit = int("1" * 16, 2)
+#origin address to store temps
+xTempSpace = 10000
+
+xCallStackIndex  = 19999
+xCallStackOrigin = 20000
+
 
 class cFalseCompiler:
     @dataclass
@@ -71,6 +78,13 @@ class cFalseCompiler:
         xType : int
         xData : str = ""
 
+    class cS1Inst:
+        def __init__(self, *xInp):
+            (self.xOp, self.xArg) = tuple(map(str, xInp)) + ((None,) if len(xInp) < 2 else ())
+        
+        def __str__(self):
+            return f"{self.xOp} {self.xArg}".format()
+        
     class cLambda:
         def __init__(self, xContent : list):
             self.xContent = xContent
@@ -89,7 +103,7 @@ class cFalseCompiler:
     
     @staticmethod
     def Parse(xInput):
-        xFileIter = cFalse.IterGen(xInput)
+        xFileIter = cFalseCompiler.IterGen(xInput)
         xOutputBuffer = []
         
         
@@ -99,16 +113,16 @@ class cFalseCompiler:
 
             if xChar is None: break
         
-            if  xChar == "'":       xOutputBuffer += [cFalse.cCommand(xType = CE.PUTCHR, xData = next(xFileIter))]
-            elif xChar.isalpha():   xOutputBuffer += [cFalse.cCommand(xType = CE.PUTREF, xData = xChar)]
-            elif xChar in CM:       xOutputBuffer += [cFalse.cCommand(xType = CM[xChar])]
+            if  xChar == "'":       xOutputBuffer += [cFalseCompiler.cCommand(xType = CE.PUTCHR, xData = next(xFileIter))]
+            elif xChar.isalpha():   xOutputBuffer += [cFalseCompiler.cCommand(xType = CE.PUTREF, xData = xChar)]
+            elif xChar in CM:       xOutputBuffer += [cFalseCompiler.cCommand(xType = CM[xChar])]
             
             elif xChar == '"':
                 #eeehhh walrus operator aaaahhh 
                 while ((xTemp:=next(xFileIter)) != '"'):
                     xTempBuffer += xTemp
 
-                xOutputBuffer += [cFalse.cCommand(xType = CE.STRING, xData = xTempBuffer)]
+                xOutputBuffer += [cFalseCompiler.cCommand(xType = CE.STRING, xData = xTempBuffer)]
             
             elif xChar.isdigit():
                 while True:
@@ -116,7 +130,7 @@ class cFalseCompiler:
                     xChar = next(xFileIter)
                     if not(xChar and xChar.isdigit()): break                    
 
-                xOutputBuffer += [cFalse.cCommand(xType = CE.PUTINT, xData = int(xTempBuffer))]
+                xOutputBuffer += [cFalseCompiler.cCommand(xType = CE.PUTINT, xData = int(xTempBuffer))]
                 continue
             
             elif xChar == "[":
@@ -126,7 +140,7 @@ class cFalseCompiler:
                     xChar = next(xFileIter)
                     if xChar in "[]": xBracketLevel += {"[": 1, "]": -1}[xChar]
                     
-                xOutputBuffer += [cFalse.cLambda(cFalse.Parse(xTempBuffer[1:]))]                
+                xOutputBuffer += [cFalseCompiler.cLambda(cFalseCompiler.Parse(xTempBuffer[1:]))]                
             
             elif xChar == "{":
                 while next(xFileIter) != "}": pass
@@ -134,81 +148,159 @@ class cFalseCompiler:
             xChar = next(xFileIter)
                     
                     
-        return xOutputBuffer
-            
+        return xOutputBuffer        
+
     def __init__(self):
-        self.xStack = []
-        self.xMem   = [None for x in range(256)]
+        self.xInstList = [self.cS1Inst("got", "main")]
     
-    #OH MY GOD I LOVE C
-    def Memset(self, xIndex, xData):
-        self.xMem[xIndex] = xData
+    #takes lambda allocates it in memory and returns reference (ir value)
+    def AllocLambda(self, xLambdaCode):
+        #each instruction takes two word of memory, that's why the *2 is needed
+        xOrigin = len(self.xInstList) * 2
+        
+        self.xInstList += xLambdaCode + [
+                #dec stack ptr
+                self.cS1Inst("lDA", xCallStackIndex),
+                self.cS1Inst("set", 1),
+                self.cS1Inst("sub"),
+                self.cS1Inst("sAD", xCallStackIndex),
+                
+                #pull from call stack push to main stack, then jump
+                self.cS1Inst("clr"),
+                self.cS1Inst("lPA", xCallStackIndex),
+                self.cS1Inst("sRP", xCallStackIndex),
+                self.cS1Inst("pha"),
+                self.cS1Inst("ret"),
+                
+            
+            ]
+        
+        return xOrigin
+
+    #if xDoLambda is True this returns the origin address of the allocated lambda
+    #if xDoLmabda is False this returns the self.xInstList
+    def Compile(self, xTokens, xDoLambda = False): 
+        #short handle
+        cS1Inst = self.cS1Inst
+        xInstBuffer = []
+        """
+               : (lambda: self.xStack.append(xToken.xData)),
+            CE.PUTREF   : (lambda: self.xStack.append(ord(xToken.xData) - 97)),
     
-    def Interpret(self, xTokens):        
-        for xToken in xTokens:
-            
-            if type(xToken) is cFalse.cLambda:
-                self.xStack.append(xToken)
-            
-            elif xToken.xType == CE.WHILE:
-                xDo     = self.xStack.pop().xContent 
-                xCond   = self.xStack.pop().xContent
-                
-                cFalse.Interpret(self, xCond)
-                while(self.xStack.pop()):                    
-                    cFalse.Interpret(self, xDo)
-                    cFalse.Interpret(self, xCond)
-            
-            elif xToken.xType == CE.ROT:
-                n0 = self.xStack.pop()
-                n1 = self.xStack.pop()
-                n2 = self.xStack.pop()
-                
-                self.xStack += [n1, n2, n0]
+    "ø" : CE.PICK,
+    "+" : CE.PLUS,
+    "-" : CE.MINUS,
+    "*" : CE.MUL,
+    "/" : CE.DIV,
+    "_" : CE.NEG,
+    "&" : CE.AND,
+    "|" : CE.OR,
+    "~" : CE.NOT,
+    ">" : CE.GREAT,
+    "=" : CE.EQUAL,
+    "!" : ,
+    "?" : CE.COND,
+    "#" : CE.WHILE,
+    ":" : CE.STORE,
+    ";" : CE.FETCH,
+    "^" : CE.READ,
+    "," : ,
+    "." : CE.DEC,
+    "ß" : CE.FLUSH,
+"""
+        for xTokenIter in xTokens:
+            print(xTokenIter)
+            if type(xTokenIter) is cFalseCompiler.cLambda:
+                xInstBuffer += [
+                        cS1Inst("clr"),
+                        cS1Inst("set", self.Compile(xTokenIter.xContent, xDoLambda=True)),
+                        cS1Inst("add"),
+                        cS1Inst("pha"),
+                    ]
             
             else:
-#    "^" : CE.READ,
-#    "," : CE.WRITE,
-#    "ß" : CE.FLUSH,
-                {
-                    CE.PUTINT   : (lambda: self.xStack.append(xToken.xData)),
-                    CE.PUTCHR   : (lambda: self.xStack.append(ord(xToken.xData))),
-                    CE.PUTREF   : (lambda: self.xStack.append(ord(xToken.xData) - 97)),
-                    CE.STORE    : (lambda: self.Memset(self.xStack.pop(), self.xStack.pop())),
-                    CE.FETCH    : (lambda: self.xStack.append(self.xMem[self.xStack.pop()])),
+                xInstBuffer += {
+                    
+                    CE.STRING : sum([[
+                            cS1Inst("clr"),
+                            cS1Inst("set", ord(x)),
+                            cS1Inst("add"),
+                            cS1Inst("putstr")]
+                            for x in xTokenIter.xData
+                        ], []) if type(xTokenIter.xData) is str else [],
+                    CE.PUTCHR : [
+                            cS1Inst("clr"),
+                            cS1Inst("set", ord(xTokenIter.xData) if type(xTokenIter.xData) is str and len(xTokenIter.xData) == 1 else ""),
+                            cS1Inst("add"),
+                            cS1Inst("pha"),
+                        ],
+                    CE.PUTINT : [
+                            cS1Inst("clr"),
+                            cS1Inst("set", int(xTokenIter.xData) if type(xTokenIter.xData) is int else ""),
+                            cS1Inst("add"),
+                            cS1Inst("pha"),
+                        ],
+                    CE.DUP : [
+                            cS1Inst("pla"),
+                            cS1Inst("pha"),
+                            cS1Inst("pha"),
+                        ],
+                    CE.DROP : [
+                            cS1Inst("pla"),
+                        ],
+                    CE.SWAP : [
+                            cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 0),
+                            cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 1),
+                            cS1Inst("lDA", xTempSpace + 0), cS1Inst("pha"),
+                            cS1Inst("lDA", xTempSpace + 1), cS1Inst("pha"),
+                        ],
+                    CE.ROT : [
+                            cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 0),
+                            cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 1),
+                            cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 2),
+                            cS1Inst("lDA", xTempSpace + 1), cS1Inst("pha"),
+                            cS1Inst("lDA", xTempSpace + 2), cS1Inst("pha"),
+                            cS1Inst("lDA", xTempSpace + 0), cS1Inst("pha"),
+                        ],
+                    
+                    CE.WRITE : [
+                            cS1Inst("pla"),
+                            cS1Inst("putstr"),
+                        ],
+                    CE.EXEC : [
+                            #push current ir as return address (+1 to reference the next command)
+                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 1) * 2),
+                            cS1Inst("sRP", xCallStackIndex),
 
-                    CE.DUP  : (lambda: self.xStack.append(self.xStack[-1])),
-                    CE.DROP : (lambda: self.xStack.pop()),
-                    CE.SWAP : lambda: (self.xStack.append(self.xStack[-2]), self.xStack.pop(-3)),
-                    CE.PICK : lambda: None,
-                    CE.PLUS : (lambda: self.xStack.append(self.xStack.pop(-2) + self.xStack.pop(-1))),
-                    CE.MINUS: (lambda: self.xStack.append(self.xStack.pop(-2) - self.xStack.pop(-1))),
-                    CE.MUL  : (lambda: self.xStack.append(self.xStack.pop(-2) * self.xStack.pop(-1))),
-                    CE.DIV  : (lambda: self.xStack.append(self.xStack.pop(-2) / self.xStack.pop(-1))),
-                    CE.NEG  : (lambda: self.xStack.append(-self.xStack.pop())),
-                    CE.AND  : (lambda: self.xStack.append(self.xStack.pop() & self.xStack.pop())),
-                    CE.OR   : (lambda: self.xStack.append(self.xStack.pop() | self.xStack.pop())),
-                    CE.NOT  :  lambda: self.xStack.append(1 if self.xStack.pop() == 0 else 0),
-                    CE.GREAT: (lambda: self.xStack.append(1 if self.xStack.pop(-2) <  self.xStack.pop(-1) else 0)),
-                    CE.EQUAL: (lambda: self.xStack.append(1 if self.xStack.pop(-2) == self.xStack.pop(-1) else 0)),
-                    CE.EXEC : (lambda: self.Interpret(self.xStack.pop().xContent)),
-                    CE.COND : (lambda: self.Interpret(self.xStack.pop(-1).xContent) if self.xStack.pop(-2) else self.xStack.pop(-1)),
+                            #inc stack ptr
+                            cS1Inst("lDA", xCallStackIndex),
+                            cS1Inst("set", 1),
+                            cS1Inst("add"),
+                            cS1Inst("sAD", xCallStackIndex),
+                            
+                            #use ret to jump to the lambda origin address ("I LOVE ABUSING S1ASM AND IM NOT MENTALLY ILL" - Jerma985)
+                            cS1Inst("ret"),
+                        ],
                     
-                    CE.DEC      : (lambda: print(self.xStack.pop())),
-                    CE.STRING   : (lambda: print(xToken.xData, end = "")),
-                    CE.READ     : (lambda: self.xStack.append(ord(getch()))),
-                    CE.WRITE    : (lambda: print(chr(self.xStack.pop()), end = "")),
                     
-                }[xToken.xType]()
+                    }[xTokenIter.xType]
+                
             
-            #print(xToken, "\t", self.xStack)
+        if xDoLambda:   return self.AllocLambda(xInstBuffer)
+        else:           return self.xInstList + [cS1Inst("lab", "main")] + xInstBuffer
+            
                
     @staticmethod
     def Main(xFile):
-        xTokens = cFalse.Parse(xFile)
-        #print("\n".join(map(str, xTokens)))
-        cFalse().Interpret(xTokens)
+        xTokens = cFalseCompiler.Parse(xFile)
+        return cFalseCompiler().Compile(xTokens)
 
 if __name__ == '__main__':
     with open(sys.argv[1], "r") as xFile:
-        cFalse.Main(xFile.read())
+        xOut = cFalseCompiler.Main(xFile.read())
+    
+    print("\n".join(map(str, xOut)))
+        
+    #with open("build.s1", "r") as xFile:
+    #    xFile.write(xOut)
+        

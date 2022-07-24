@@ -92,7 +92,7 @@ class cFalseInterpreter:
     
     @staticmethod
     def Parse(xInput):
-        xFileIter = cFalse.IterGen(xInput)
+        xFileIter = cFalseInterpreter.IterGen(xInput)
         xOutputBuffer = []
         
         
@@ -102,9 +102,9 @@ class cFalseInterpreter:
 
             if xChar is None: break
         
-            if  xChar == "'":       xOutputBuffer += [cFalse.cCommand(xType = CE.PUTCHR, xData = next(xFileIter))]
-            elif xChar.isalpha():   xOutputBuffer += [cFalse.cCommand(xType = CE.PUTREF, xData = xChar)]
-            elif xChar in CM:       xOutputBuffer += [cFalse.cCommand(xType = CM[xChar])]
+            if  xChar == "'":       xOutputBuffer += [cFalseInterpreter.cCommand(xType = CE.PUTCHR, xData = next(xFileIter))]
+            elif xChar.isalpha():   xOutputBuffer += [cFalseInterpreter.cCommand(xType = CE.PUTREF, xData = xChar)]
+            elif xChar in CM:       xOutputBuffer += [cFalseInterpreter.cCommand(xType = CM[xChar])]
             
             elif xChar == '"':
                 #eeehhh walrus operator aaaahhh 
@@ -119,7 +119,7 @@ class cFalseInterpreter:
                     xChar = next(xFileIter)
                     if not(xChar and xChar.isdigit()): break                    
 
-                xOutputBuffer += [cFalse.cCommand(xType = CE.PUTINT, xData = int(xTempBuffer))]
+                xOutputBuffer += [cFalseInterpreter.cCommand(xType = CE.PUTINT, xData = int(xTempBuffer))]
                 continue
             
             elif xChar == "[":
@@ -129,7 +129,7 @@ class cFalseInterpreter:
                     xChar = next(xFileIter)
                     if xChar in "[]": xBracketLevel += {"[": 1, "]": -1}[xChar]
                     
-                xOutputBuffer += [cFalse.cLambda(cFalse.Parse(xTempBuffer[1:]))]                
+                xOutputBuffer += [cFalseInterpreter.cLambda(cFalseInterpreter.Parse(xTempBuffer[1:]))]                
             
             elif xChar == "{":
                 while next(xFileIter) != "}": pass
@@ -150,24 +150,27 @@ class cFalseInterpreter:
     def Interpret(self, xTokens):        
         for xToken in xTokens:
             
-            if type(xToken) is cFalse.cLambda:
+            if type(xToken) is cFalseInterpreter.cLambda:
                 self.xStack.append(xToken)
             
             elif xToken.xType == CE.WHILE:
                 xDo     = self.xStack.pop().xContent 
                 xCond   = self.xStack.pop().xContent
                 
-                cFalse.Interpret(self, xCond)
+                cFalseInterpreter.Interpret(self, xCond)
                 while(self.xStack.pop()):                    
-                    cFalse.Interpret(self, xDo)
-                    cFalse.Interpret(self, xCond)
+                    cFalseInterpreter.Interpret(self, xDo)
+                    cFalseInterpreter.Interpret(self, xCond)
             
             elif xToken.xType == CE.ROT:
                 n0 = self.xStack.pop()
                 n1 = self.xStack.pop()
                 n2 = self.xStack.pop()
                 
-                self.xStack += [n1, n2, n0]
+                self.xStack.append(n1)
+                self.xStack.append(n2)
+                self.xStack.append(n0)
+                #self.xStack += [n1, n2, n0]
             
             else:
 #    "^" : CE.READ,
@@ -208,10 +211,9 @@ class cFalseInterpreter:
                
     @staticmethod
     def Main(xFile):
-        xTokens = cFalse.Parse(xFile)
-        #print("\n".join(map(str, xTokens)))
-        cFalse().Interpret(xTokens)
+        xTokens = cFalseInterpreter.Parse(xFile)
+        cFalseInterpreter().Interpret(xTokens)
 
 if __name__ == '__main__':
     with open(sys.argv[1], "r") as xFile:
-        cFalse.Main(xFile.read())
+        cFalseInterpreter.Main(xFile.read())
