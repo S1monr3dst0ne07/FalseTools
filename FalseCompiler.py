@@ -109,7 +109,7 @@ class cFalseCompiler:
             return self.xContent[xIndex]
         
         def __len__(self):
-            return len([x for x in self.xContent if x.xOp != "lab"])
+            return len([x for x in self.xContent if x.xOp.lower() != "lab"])
     
     class cLambda:
         def __init__(self, xContent : list):
@@ -434,39 +434,64 @@ class cFalseCompiler:
                             cS1Inst("ret"),                     #13
                             cS1Inst("lab", xTempLab[0]),        #(doesn't count because lab)
                         ],
+                    #lambdas need to be stored on the virtual stack
                     CE.WHILE : [
-                            cS1Inst("pla"),                     #1
-                            cS1Inst("sAD", xTempSpace + 0),     #2
-                            cS1Inst("pla"),                     #3
-                            cS1Inst("sAD", xTempSpace + 1),     #4
+                            cS1Inst("pla"),                     #1                            
+                            cS1Inst("sAP", xCallStackIndex),    #2
+                            cS1Inst("lDA", xCallStackIndex),    #3
+                            cS1Inst("set", 1),                  #4
+                            cS1Inst("add"),                     #5
+                            cS1Inst("sAD", xCallStackIndex),    #6
+                            cS1Inst("pla"),                     #7
+                            cS1Inst("sAP", xCallStackIndex),    #8
+                            cS1Inst("lDA", xCallStackIndex),    #9
+                            cS1Inst("set", 1),                  #10
+                            cS1Inst("add"),                     #11
+                            cS1Inst("sAD", xCallStackIndex),    #12
+                                                        
+                            cS1Inst("lab", xTempLab[0]),
+                            cS1Inst("lDA", xCallStackIndex),    #13
+                            cS1Inst("set", 1),                  #14
+                            cS1Inst("sub"),                     #15
+                            cS1Inst("sAD", xTempSpace + 0),     #16
+                            cS1Inst("lPA", xTempSpace + 0),     #17
+                            cS1Inst("pha"),                     #18
                             
-                            cS1Inst("lab", xTempLab[0]),        #5
-                            cS1Inst("lDA", xTempSpace + 0),     #6
-                            cS1Inst("pha"),                     #7
-                            
-                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 14) * 2), #8
-                            cS1Inst("sRP", xCallStackIndex),    #9
-                            cS1Inst("lDA", xCallStackIndex),    #10
-                            cS1Inst("set", 1),                  #11
-                            cS1Inst("add"),                     #12
-                            cS1Inst("sAD", xCallStackIndex),    #13
-                            cS1Inst("ret"),                     #14
+                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 25) * 2), #19
+                            cS1Inst("sRP", xCallStackIndex),    #20
+                            cS1Inst("lDA", xCallStackIndex),    #21
+                            cS1Inst("set", 1),                  #22
+                            cS1Inst("add"),                     #23
+                            cS1Inst("sAD", xCallStackIndex),    #24
+                            cS1Inst("ret"),                     #25
 
-                            cS1Inst("jm0", xTempLab[1]),        #15
-                            cS1Inst("lDA", xTempSpace + 1),     #16
-                            cS1Inst("pha"),                     #17    
+                            cS1Inst("pla"),                     #26
+                            cS1Inst("jm0", xTempLab[1]),        #27
+
+                            cS1Inst("lDA", xCallStackIndex),    #28
+                            cS1Inst("set", 2),                  #29
+                            cS1Inst("sub"),                     #30
+                            cS1Inst("sAD", xTempSpace + 0),     #31
+                            cS1Inst("lPA", xTempSpace + 0),     #32
+                            cS1Inst("pha"),                     #33
                             
-                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 24) * 2), #18
-                            cS1Inst("sRP", xCallStackIndex),    #19
-                            cS1Inst("lDA", xCallStackIndex),    #20
-                            cS1Inst("set", 1),                  #21
-                            cS1Inst("add"),                     #22
-                            cS1Inst("sAD", xCallStackIndex),    #23
-                            cS1Inst("ret"),                     #24
-                            
+                            cS1Inst("set", (len(self.xInstList) + len(xInstBuffer) + 40) * 2), #34
+                            cS1Inst("sRP", xCallStackIndex),    #35
+                            cS1Inst("lDA", xCallStackIndex),    #36
+                            cS1Inst("set", 1),                  #37
+                            cS1Inst("add"),                     #38
+                            cS1Inst("sAD", xCallStackIndex),    #39
+                            cS1Inst("ret"),                     #40
+                                                                                    
                             cS1Inst("got", xTempLab[0]),
                             cS1Inst("lab", xTempLab[1]),
 
+                            #reallign virtual stack pointer
+                            cS1Inst("lDA", xCallStackIndex),
+                            cS1Inst("set", 2),              
+                            cS1Inst("sub"),                 
+                            cS1Inst("sAD", xCallStackIndex),
+                            
 
                         
                         ],
