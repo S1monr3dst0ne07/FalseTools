@@ -111,7 +111,7 @@ class cFalseInterpreter:
                 while ((xTemp:=next(xFileIter)) != '"'):
                     xTempBuffer += xTemp
 
-                xOutputBuffer += [cFalse.cCommand(xType = CE.STRING, xData = xTempBuffer)]
+                xOutputBuffer += [cFalseInterpreter.cCommand(xType = CE.STRING, xData = xTempBuffer)]
             
             elif xChar.isdigit():
                 while True:
@@ -195,12 +195,12 @@ class cFalseInterpreter:
                     CE.AND  : (lambda: self.xStack.append(self.xStack.pop() & self.xStack.pop())),
                     CE.OR   : (lambda: self.xStack.append(self.xStack.pop() | self.xStack.pop())),
                     CE.NOT  :  lambda: self.xStack.append(1 if self.xStack.pop() == 0 else 0),
-                    CE.GREAT: (lambda: self.xStack.append(1 if self.xStack.pop(-2) <  self.xStack.pop(-1) else 0)),
+                    CE.GREAT: (lambda: self.xStack.append(1 if self.xStack.pop(-2) >  self.xStack.pop(-1) else 0)),
                     CE.EQUAL: (lambda: self.xStack.append(1 if self.xStack.pop(-2) == self.xStack.pop(-1) else 0)),
                     CE.EXEC : (lambda: self.Interpret(self.xStack.pop().xContent)),
                     CE.COND : (lambda: self.Interpret(self.xStack.pop(-1).xContent) if self.xStack.pop(-2) else self.xStack.pop(-1)),
                     
-                    CE.DEC      : (lambda: print(self.xStack.pop())),
+                    CE.DEC      : (lambda: print(self.xStack.pop(), end = "")),
                     CE.STRING   : (lambda: print(xToken.xData, end = "")),
                     CE.READ     : (lambda: self.xStack.append(ord(getch()))),
                     CE.WRITE    : (lambda: print(chr(self.xStack.pop()), end = "")),
