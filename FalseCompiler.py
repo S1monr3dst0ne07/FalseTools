@@ -109,7 +109,7 @@ class cFalseCompiler:
             return self.xContent[xIndex]
         
         def __len__(self):
-            return len([x for x in self.xContent if x.xOp.lower() != "lab"])
+            return len([x for x in self.xContent if x.xOp.lower() not in ["lab", '"']])
     
     class cLambda:
         def __init__(self, xContent : list):
@@ -216,7 +216,7 @@ class cFalseCompiler:
         #each instruction takes two word of memory, that's why the *2 is needed
         xOrigin = len(self.xInstList) * 2
         
-        self.xInstList += xLambdaCode + self.cS1InstList([
+        self.xInstList += (xLambdaCode + self.cS1InstList([
                 #dec stack ptr
                 self.cS1Inst("lDA", xCallStackIndex),
                 self.cS1Inst("set", 1),
@@ -228,10 +228,11 @@ class cFalseCompiler:
                 self.cS1Inst("lPA", xCallStackIndex),
                 self.cS1Inst("sRP", xCallStackIndex),
                 self.cS1Inst("pha"),
+
                 self.cS1Inst("ret"),
                 
             
-            ])
+            ]))
         
         return xOrigin
 
@@ -273,11 +274,17 @@ class cFalseCompiler:
     "." : ,
     "ß" : CE.FLUSH,
 """
+
+        #precompile lambdas
+        xLambdaOriginAddresses = [self.Compile(x.xContent, xDoLambda=True) for x in xTokens if type(x) is self.cLambda]
+
+
         for xTokenIter in xTokens:
-            if type(xTokenIter) is cFalseCompiler.cLambda:
+            xInstBuffer += self.cS1InstList([self.cS1Inst('"', str(xTokenIter))])
+            if type(xTokenIter) is self.cLambda:
                 xInstBuffer += cFalseCompiler.cS1InstList([
                     cS1Inst("clr"),
-                    cS1Inst("set", self.Compile(xTokenIter.xContent, xDoLambda=True)),
+                    cS1Inst("set", xLambdaOriginAddresses.pop(0)),
                     cS1Inst("add"),
                     cS1Inst("pha"),
                 ])
@@ -505,8 +512,7 @@ class cFalseCompiler:
                     
                     }[xTokenIter.xType])
                 
-                
-        
+       
         if xDoLambda:   return self.AllocLambda(xInstBuffer)
         else:           return self.xInstList + self.cS1InstList([cS1Inst("lab", "main")]) + xInstBuffer + self.cS1InstList([cS1Inst("brk")])
             
