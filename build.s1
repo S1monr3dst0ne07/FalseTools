@@ -1,0 +1,432 @@
+set 20000
+sRD 19999
+got main
+lab mul
+clr 
+sAD 10002
+pla 
+sAD 10010
+pla 
+sAD 10000
+pla 
+sAD 10001
+lab muloop
+lDA 10000
+jm0 mulexit
+set 1
+sub 
+sAD 10000
+lDA 10002
+lDR 10001
+add 
+sAD 10002
+got muloop
+lab mulexit
+lDA 10002
+pha 
+lDA 10010
+pha 
+ret 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData='')
+pla 
+pha 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='a')
+clr 
+set 0
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData='')
+pla 
+sAD 10000
+lPA 10000
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.EQUAL: 17>, xData='')
+pla 
+sAD 10000
+lDR 10000
+pla 
+jmA temp30
+clr 
+got temp31
+lab temp30
+clr 
+set 65535
+add 
+lab temp31
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.NOT: 15>, xData='')
+pla 
+not 
+pha 
+lDA 19999
+set 1
+sub 
+sAD 19999
+clr 
+lPA 19999
+sRP 19999
+pha 
+ret 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.SWAP: 5>, xData='')
+pla 
+sAD 10000
+pla 
+sAD 10001
+lDA 10000
+pha 
+lDA 10001
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData='')
+pla 
+pha 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.ROT: 6>, xData='')
+pla 
+sAD 10000
+pla 
+sAD 10001
+pla 
+sAD 10002
+lDA 10001
+pha 
+lDA 10000
+pha 
+lDA 10002
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData='')
+pla 
+pha 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.ROT: 6>, xData='')
+pla 
+sAD 10000
+pla 
+sAD 10001
+pla 
+sAD 10002
+lDA 10001
+pha 
+lDA 10000
+pha 
+lDA 10002
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData='')
+pla 
+sAD 10000
+lDR 10000
+pla 
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b')
+clr 
+set 1
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData='')
+pla 
+sAD 10000
+lPA 10000
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1)
+clr 
+set 1
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData='')
+pla 
+sAD 10000
+lDR 10000
+pla 
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b')
+clr 
+set 1
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData='')
+pla 
+sAD 10000
+pla 
+sAP 10000
+lDA 19999
+set 1
+sub 
+sAD 19999
+clr 
+lPA 19999
+sRP 19999
+pha 
+ret 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=0)
+clr 
+set 0
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.EQUAL: 17>, xData='')
+pla 
+sAD 10000
+lDR 10000
+pla 
+jmA temp180
+clr 
+got temp181
+lab temp180
+clr 
+set 65535
+add 
+lab temp181
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.NOT: 15>, xData='')
+pla 
+not 
+pha 
+lDA 19999
+set 1
+sub 
+sAD 19999
+clr 
+lPA 19999
+sRP 19999
+pha 
+ret 
+lDA 19999
+set 1
+sub 
+sAD 19999
+clr 
+lPA 19999
+sRP 19999
+pha 
+ret 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='a')
+clr 
+set 0
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData='')
+pla 
+sAD 10000
+pla 
+sAP 10000
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=0)
+clr 
+set 0
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData='')
+pla 
+pha 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b')
+clr 
+set 1
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData='')
+pla 
+sAD 10000
+pla 
+sAP 10000
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1)
+clr 
+set 1
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1)
+clr 
+set 1
+add 
+pha 
+" cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='a'), cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.EQUAL: 17>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.NOT: 15>, xData=''))
+clr 
+set 52
+add 
+pha 
+" cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.SWAP: 5>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.ROT: 6>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.ROT: 6>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b'), cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1), cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b'), cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData=''))
+clr 
+set 120
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.WHILE: 20>, xData='')
+pla 
+sAP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+pla 
+sAP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+lab temp280
+lDA 19999
+set 1
+sub 
+sAD 10000
+lPA 10000
+pha 
+set 478
+sRP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+ret 
+pla 
+jm0 temp281
+lDA 19999
+set 2
+sub 
+sAD 10000
+lPA 10000
+pha 
+set 508
+sRP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+ret 
+got temp280
+lab temp281
+lDA 19999
+set 2
+sub 
+sAD 19999
+" cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=0), cFalseCompiler.cCommand(xType=<cCommandEnum.EQUAL: 17>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.NOT: 15>, xData=''))
+clr 
+set 278
+add 
+pha 
+" cLambda()
+clr 
+set 332
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.WHILE: 20>, xData='')
+pla 
+sAP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+pla 
+sAP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+lab temp290
+lDA 19999
+set 1
+sub 
+sAD 10000
+lPA 10000
+pha 
+set 584
+sRP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+ret 
+pla 
+jm0 temp291
+lDA 19999
+set 2
+sub 
+sAD 10000
+lPA 10000
+pha 
+set 614
+sRP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+ret 
+got temp290
+lab temp291
+lDA 19999
+set 2
+sub 
+sAD 19999
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b')
+clr 
+set 1
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData='')
+pla 
+sAD 10000
+lPA 10000
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=2)
+clr 
+set 2
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData='')
+pla 
+sAD 10000
+lDR 10000
+pla 
+add 
+pha 
+lDA 19999
+set 1
+sub 
+sAD 19999
+clr 
+lPA 19999
+sRP 19999
+pha 
+ret 
+lab main
+" cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='a'), cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=0), cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b'), cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1), cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='a'), cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.EQUAL: 17>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.NOT: 15>, xData='')), cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.SWAP: 5>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.ROT: 6>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.DUP: 3>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.ROT: 6>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b'), cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=1), cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b'), cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData='')), cFalseCompiler.cCommand(xType=<cCommandEnum.WHILE: 20>, xData=''), cLambda(cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=0), cFalseCompiler.cCommand(xType=<cCommandEnum.EQUAL: 17>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.NOT: 15>, xData='')), cLambda(), cFalseCompiler.cCommand(xType=<cCommandEnum.WHILE: 20>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='b'), cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData=''), cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=2), cFalseCompiler.cCommand(xType=<cCommandEnum.PLUS: 8>, xData=''))
+clr 
+set 350
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='i')
+clr 
+set 8
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.STORE: 22>, xData='')
+pla 
+sAD 10000
+pla 
+sAP 10000
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTINT: 1>, xData=6765)
+clr 
+set 6765
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.PUTREF: 21>, xData='i')
+clr 
+set 8
+add 
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.FETCH: 23>, xData='')
+pla 
+sAD 10000
+lPA 10000
+pha 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.EXEC: 18>, xData='')
+set 740
+sRP 19999
+lDA 19999
+set 1
+add 
+sAD 19999
+ret 
+" cFalseCompiler.cCommand(xType=<cCommandEnum.DEC: 27>, xData='')
+pla 
+sAD 10000
+out 10000
+brk 
