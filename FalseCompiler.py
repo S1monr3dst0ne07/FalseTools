@@ -254,26 +254,16 @@ class cFalseCompiler:
         cS1Inst = self.cS1Inst
         xInstBuffer = self.cS1InstList()
         """    
-    "ø" : CE.PICK,
-    
-    "*" : ,
-    "/" : CE.DIV,
-    "_" : CE.NEG,
-    "&" : CE.AND,
-    "|" : CE.OR,
-    "~" : ,
-    ">" : ,
-    "=" : ,
-    "!" : ,
-    "?" : ,
-    "#" : ,
-    ":" : ,
-    ";" : ,
-    "^" : CE.READ,
-    "," : ,
-    "." : ,
-    "ß" : CE.FLUSH,
-"""
+            not implemented features
+
+            "ø" : CE.PICK,    
+            "/" : CE.DIV,
+            "_" : CE.NEG,
+            "&" : CE.AND,
+            "|" : CE.OR,
+            "^" : CE.READ,
+            "ß" : CE.FLUSH,
+        """
 
         #precompile lambdas
         xLambdaOriginAddresses = [self.Compile(x.xContent, xDoLambda=True) for x in xTokens if type(x) is self.cLambda]
@@ -349,8 +339,8 @@ class cFalseCompiler:
                             cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 1),
                             cS1Inst("pla"), cS1Inst("sAD", xTempSpace + 2),
                             cS1Inst("lDA", xTempSpace + 1), cS1Inst("pha"),
-                            cS1Inst("lDA", xTempSpace + 2), cS1Inst("pha"),
                             cS1Inst("lDA", xTempSpace + 0), cS1Inst("pha"),
+                            cS1Inst("lDA", xTempSpace + 2), cS1Inst("pha"),
                         ],
                     
                     CE.WRITE : [
